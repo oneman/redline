@@ -17,7 +17,7 @@ tooltip_setting = "I turn red when some program is using more than #{redline_per
 puts tooltip_setting
 
 #get_cpu_info = "ps -e -o pcpu,cpu,nice,state,cputime,args --sort pcpu | sed '/^ 0.0 /d'"
-get_cpu_info = "top -b -n 1"
+get_cpu_info = "nice top -b -n 1"
 
 $icon = Gtk::StatusIcon.new
 $icon.icon_name = 'gdu-smart-healthy'
