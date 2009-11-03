@@ -16,7 +16,8 @@ redline_percentage = 80
 tooltip_setting = "I turn red when some program is using more than #{redline_percentage}% of any cpu or aggregate of cpus."
 puts tooltip_setting
 
-get_cpu_info = "ps -e -o pcpu,cpu,nice,state,cputime,args --sort pcpu | sed '/^ 0.0 /d'"
+#get_cpu_info = "ps -e -o pcpu,cpu,nice,state,cputime,args --sort pcpu | sed '/^ 0.0 /d'"
+get_cpu_info = "top -b -n 1"
 
 $icon = Gtk::StatusIcon.new
 $icon.icon_name = 'gdu-smart-healthy'
@@ -30,7 +31,8 @@ program_cpu_usage_info = `#{get_cpu_info}`
 bad_programs = ""
 
 for line in program_cpu_usage_info.lines
- if line.split(" ").first.to_f > redline_percentage
+
+ if line.split(" ")[0].to_i > 0 && line.split(" ")[8].to_i > redline_percentage
   bad_programs = bad_programs + line + "\n"
  end
 end
