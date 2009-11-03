@@ -16,8 +16,12 @@ yellowline_percentage = 80
 
 yellowline_enable = true
 
+
+enable_cpu_tears = true
+cpu_tears_x = 1920
+cpu_tears_y = 1080
+
 tooltip_setting = "I turn red when some program is using more than #{redline_percentage}% of any cpu or aggregate of cpus."
-puts tooltip_setting
 
 #get_cpu_info = "ps -e -o pcpu,cpu,nice,state,cputime,args --sort pcpu | sed '/^ 0.0 /d'"
 get_cpu_info = "nice top -b -n 1"
@@ -48,6 +52,16 @@ end
 if bad_programs != ""
  $icon.icon_name = 'gdu-smart-failing'
  $icon.tooltip = bad_programs
+
+if enable_cpu_tears == true
+3.times do
+ rand1 = rand(cpu_tears_x)
+ rand2 = rand(cpu_tears_y)
+ `dbus-send --type=method_call --dest=org.freedesktop.compiz /org/freedesktop/compiz/water/allscreens/point org.freedesktop.compiz.activate string:'root' int32:\`xwininfo -root | grep id: | awk '{ print $4 }'\` string:'amplitude' double:1 string:'x' int32:#{rand1} string:'y' int32:#{rand2}`
+ sleep 0.2
+end
+end
+
 else
  if yellowline_enable && mean_programs != ""
   $icon.icon_name = 'gdu-smart-threshold'
