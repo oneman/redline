@@ -11,7 +11,10 @@
 
 require 'gtk2'
 
-redline_percentage = 80
+redline_percentage = 90
+yellowline_percentage = 80
+
+yellowline_enable = true
 
 tooltip_setting = "I turn red when some program is using more than #{redline_percentage}% of any cpu or aggregate of cpus."
 puts tooltip_setting
@@ -29,11 +32,16 @@ timeout = Gtk::timeout_add(3000) {
 program_cpu_usage_info = `#{get_cpu_info}`
 
 bad_programs = ""
+mean_programs = ""
 
 for line in program_cpu_usage_info.lines
 
  if line.split(" ")[0].to_i > 0 && line.split(" ")[8].to_i > redline_percentage
   bad_programs = bad_programs + line + "\n"
+ end
+
+ if line.split(" ")[0].to_i > 0 && line.split(" ")[8].to_i > yellowline_percentage
+  mean_programs = mean_programs + line + "\n"
  end
 end
 
@@ -41,9 +49,14 @@ if bad_programs != ""
  $icon.icon_name = 'gdu-smart-failing'
  $icon.tooltip = bad_programs
 else
- if $icon.icon_name == 'gdu-smart-failing'
-  $icon.icon_name = 'gdu-smart-healthy'
-  $icon.tooltip = 'Just fine now.'
+ if yellowline_enable && mean_programs != ""
+  $icon.icon_name = 'gdu-smart-threshold'
+  $icon.tooltip = mean_programs
+ else
+  if $icon.icon_name != 'gdu-smart-healthy'
+   $icon.icon_name = 'gdu-smart-healthy'
+   $icon.tooltip = 'Just fine now.'
+  end
  end
 end
 
